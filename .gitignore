@@ -5,3 +5,13 @@ storybook-static
 
 /.idea/*
 yarn-error.log
+
+#!.yarn/cache
+.pnp.*
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

@@ -1,3 +1,9 @@
-import vitestConfig from '../vitest.config';
+/// <reference types="vitest" />
 
-export default vitestConfig;
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+  },
+});
