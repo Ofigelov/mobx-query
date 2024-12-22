@@ -1,16 +1,9 @@
 {
-  "root": true,
-  "extends": ["@astral/eslint-config-react-ts"],
+  "extends": "../.eslintrc",
   "rules": {
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": true, "packageDir": ["./", "./"] }
+      { "devDependencies": true, "packageDir": ["./", "../"] }
     ]
-  },
-  "overrides": [
-    {
-      "files": "**/*.test.ts",
-      "extends": ["@astral/eslint-config-vitest"]
-    }
-  ]
+  }
 }
