@@ -120,6 +120,7 @@ export class AuxiliaryQuery<TResult, TError = void> {
    */
   public submitError = (error: TError) => {
     this.checkBackgroundAndSet((storage) => this.setError(storage, error));
+    this.isInvalid = false;
   };
 
   private setLoading: SetStorage<TError> = (storage) => {

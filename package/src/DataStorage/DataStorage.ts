@@ -29,6 +29,10 @@ export class DataStorage<TData> {
     this.internalData = value;
   };
 
+  public cleanData = () => {
+    this.internalData = undefined;
+  };
+
   /**
    * Геттер данных
    */

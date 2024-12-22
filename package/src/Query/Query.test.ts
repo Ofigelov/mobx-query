@@ -600,4 +600,76 @@ describe('Query', () => {
       expect(query.isError).toBeFalsy();
     });
   });
+
+  describe('При фейле запроса после инвалидации', () => {
+    const createSut = (isBackground = false) => {
+      const onInsideErrorExecutor = vi.fn();
+      //счетчик для имитации первого успешного запроса, и последующий упавших
+      let counter = 0;
+
+      const sut = new Query<unknown, unknown, typeof isBackground>(
+        () => {
+          if (counter === 0) {
+            counter++;
+
+            return Promise.resolve('foo');
+          }
+
+          onInsideErrorExecutor();
+
+          return Promise.reject('bar');
+        },
+        {
+          dataStorage: getDataStorage(),
+          statusStorage: getStatusStorage(),
+          backgroundStatusStorage: isBackground ? getStatusStorage() : null,
+          enabledAutoFetch: true,
+        },
+      );
+
+      return { sut, onInsideErrorExecutor };
+    };
+
+    it('Executor зафейленнго запроса вызывается единожды', async () => {
+      const { sut, onInsideErrorExecutor } = createSut();
+
+      //имитируем считывание данных, чтобы запустить первый успешный запрос
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      sut.invalidate();
+      //имитируем считывание данных, чтобы запустить запрос данных после инвалидации
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      //имитируем считывание данных, чтобы удостовериться, что еще одно считывание данные не привело к еще одному запросу
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      expect(onInsideErrorExecutor).toHaveBeenCalledOnce();
+    });
+
+    it('Данные полученные от первого успешного запроса сбрасываются', async () => {
+      const { sut } = createSut();
+
+      //имитируем считывание данных, чтобы запустить первый успешный запрос
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      sut.invalidate();
+      //имитируем считывание данных, чтобы запустить запрос данных после инвалидации
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      expect(sut.data).toBeUndefined();
+    });
+
+    it('Данные полученные от первого успешного запроса не сбрасываются при наличии background', async () => {
+      const { sut } = createSut(true);
+
+      //имитируем считывание данных, чтобы запустить первый успешный запрос
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      sut.invalidate();
+      //имитируем считывание данных, чтобы запустить запрос данных после инвалидации
+      JSON.stringify(sut.data);
+      await when(() => !sut.isLoading);
+      expect(sut.data).toBe('foo');
+    });
+  });
 });

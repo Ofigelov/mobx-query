@@ -176,6 +176,10 @@ export class Query<
         onSuccess?.(res);
       })
       .catch((e: TError) => {
+        if (!this.background) {
+          this.storage.cleanData();
+        }
+
         if (onError) {
           onError(e);
         } else {

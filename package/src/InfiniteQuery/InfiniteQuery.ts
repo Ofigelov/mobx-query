@@ -265,6 +265,10 @@ export class InfiniteQuery<
         this.submitSuccess(resData, onSuccess);
       })
       .catch((e: TError) => {
+        if (!this.background) {
+          this.storage.cleanData();
+        }
+
         if (onError) {
           onError(e);
         } else {
