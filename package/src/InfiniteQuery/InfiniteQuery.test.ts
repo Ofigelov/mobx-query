@@ -748,5 +748,25 @@ describe('InfiniteQuery', () => {
       expect(query.isSuccess).toBeTruthy();
       expect(query.isError).toBeFalsy();
     });
+
+    it('Использование forceUpdate не влияет на счетчик offset', async () => {
+      const onInsideExecutor = vi.fn();
+      const query = new InfiniteQuery(
+        ({ offset }) => {
+          onInsideExecutor(offset);
+
+          return Promise.resolve(['foo']);
+        },
+        {
+          dataStorage: getDataStorage(),
+          statusStorage: getStatusStorage(),
+          incrementCount: 2,
+        },
+      );
+
+      query.forceUpdate(['baz', 'bar']);
+      query.fetchMore();
+      expect(onInsideExecutor).toBeCalledWith(2);
+    });
   });
 });

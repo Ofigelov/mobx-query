@@ -199,8 +199,6 @@ export class InfiniteQuery<
    * Форс метод для установки данных
    */
   public forceUpdate = (data: TResult[]) => {
-    this.offset = 0;
-    this.isEndReached = false;
     this.auxiliary.submitSuccess();
     this.submitSuccess(data);
   };
